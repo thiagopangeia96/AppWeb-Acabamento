@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#1F3864">
+<title>Lançamento — Pangeia 96</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#EFEDE8;min-height:100vh;padding-bottom:40px;}
+  .top-bar{background:#1F3864;padding:16px 18px 14px;position:sticky;top:0;z-index:10;}
+  .top-bar .brand{font-size:10px;color:rgba(255,255,255,0.55);letter-spacing:0.08em;text-transform:uppercase;}
+  .top-bar .title{font-size:16px;font-weight:700;color:#fff;margin-top:2px;}
+  .body{padding:14px 14px 0;display:flex;flex-direction:column;gap:12px;max-width:480px;margin:0 auto;}
+  .card{background:#fff;border-radius:16px;overflow:hidden;border:1px solid #E8E5DE;}
+  .card-header{background:#F5F3EE;padding:9px 16px;font-size:10px;font-weight:700;color:#888780;letter-spacing:0.07em;text-transform:uppercase;border-bottom:1px solid #E8E5DE;}
+  .card-body{padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .field{display:flex;flex-direction:column;gap:4px;}
+  .field label{font-size:10px;font-weight:700;color:#888780;letter-spacing:0.05em;text-transform:uppercase;}
+  input[type=text],input[type=number],select,textarea{background:#F8F6F2;border:1.5px solid #E0DDD6;border-radius:10px;padding:10px 12px;font-size:15px;color:#1a1a1a;width:100%;-webkit-appearance:none;appearance:none;outline:none;font-family:inherit;transition:border-color .15s;}
+  input[type=text]:focus,input[type=number]:focus,select:focus,textarea:focus{border-color:#378ADD;background:#fff;}
+  input.filled,select.filled{border-color:#9FE1CB;background:#F0FBF6;}
+  select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888780' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+  textarea{resize:none;min-height:56px;font-size:14px;}
+  .tipo-opts{display:flex;flex-direction:column;gap:6px;}
+  .tipo-opt{padding:10px 14px;border-radius:10px;font-size:13px;font-weight:500;border:1.5px solid #E0DDD6;color:#5F5E5A;background:#F8F6F2;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .15s;}
+  .tipo-opt.sel{background:#EEEDFE;border-color:#7F77DD;color:#3C3489;}
+  .tipo-dot{width:10px;height:10px;border-radius:50%;background:#E0DDD6;flex-shrink:0;}
+  .tipo-opt.sel .tipo-dot{background:#7F77DD;}
+  .tam-opts{display:flex;flex-wrap:wrap;gap:6px;}
+  .tam-chip{padding:8px 13px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid #E0DDD6;color:#888780;background:#F8F6F2;cursor:pointer;transition:all .15s;user-select:none;}
+  .tam-chip.sel{background:#E6F1FB;border-color:#378ADD;color:#0C447C;}
+  .qty-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+  .qty-box{border-radius:12px;padding:10px 8px;text-align:center;border:1.5px solid transparent;}
+  .qty-box label{font-size:9px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;display:block;margin-bottom:5px;}
+  .qty-box input{background:transparent;border:none;font-size:22px;font-weight:700;text-align:center;padding:0;border-radius:0;width:100%;outline:none;}
+  .qty-box.ok{background:#E1F5EE;border-color:#9FE1CB;}
+  .qty-box.ok label{color:#0F6E56;}
+  .qty-box.ok input{color:#085041;}
+  .qty-box.bz{background:#FAEEDA;border-color:#FAC775;}
+  .qty-box.bz label{color:#854F0B;}
+  .qty-box.bz input{color:#633806;}
+  .qty-box.co{background:#FAECE7;border-color:#F5C4B3;}
+  .qty-box.sj{background:#F3F0E8;border-color:#C8BFA0;}
+  .qty-box.co label{color:#993C1D;}
+  .qty-box.co input{color:#712B13;}
+  .qty-box.sj input{color:#3D3010;}
+  .soma{border-radius:9px;padding:9px 12px;font-size:12px;font-weight:700;text-align:center;transition:all .2s;}
+  .soma.ok{background:#E1F5EE;color:#0F6E56;}
+  .soma.warn{background:#FAECE7;color:#993C1D;}
+  .soma.neutral{background:#F5F3EE;color:#888780;}
+  .btn-reg{background:#1F3864;color:#fff;border:none;border-radius:14px;padding:16px;width:100%;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px;}
+  .btn-reg:active{opacity:0.85;}
+  .btn-parcial{background:#fff;color:#1F3864;border:2px solid #1F3864;border-radius:14px;padding:14px;width:100%;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;display:none;}
+  .btn-parcial:active{opacity:0.8;}
+  .btn-limpar{position:fixed;bottom:24px;right:20px;background:#fff;color:#993C1D;border:2px solid #993C1D;border-radius:40px;padding:10px 18px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.15);z-index:50;display:none;}
+  .btn-limpar:active{opacity:0.8;}
+  .hint{font-size:11px;color:#B4B2A9;text-align:center;margin-top:6px;margin-bottom:8px;}
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#085041;color:#fff;padding:12px 24px;border-radius:40px;font-size:13px;font-weight:600;white-space:nowrap;opacity:0;transition:opacity .3s;pointer-events:none;z-index:100;}
+  .toast.show{opacity:1;}
+  .toast.err{background:#A32D2D;}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="brand">Pangeia 96</div>
+  <div class="title">Lançamento de Produção</div>
+</div>
+
+<div class="body">
+  <div class="card">
+    <div class="card-header">Identificação</div>
+    <div class="card-body">
+      <div class="field">
+        <label>Colaborador(a)</label>
+        <select id="colaborador" onchange="filled(this)">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Tipo de lançamento</label>
+        <div class="tipo-opts">
+          <div class="tipo-opt" onclick="selTipo(this,'Revisão')"><div class="tipo-dot"></div>Revisão</div>
+          <div class="tipo-opt" onclick="selTipo(this,'Botão / Passadoria')"><div class="tipo-dot"></div>Botão / Passadoria</div>
+          <div class="tipo-opt" onclick="selTipo(this,'Linha / Embalagem')"><div class="tipo-dot"></div>Linha / Embalagem</div>
+          <div class="tipo-opt" onclick="selTipo(this,'Trocas e Consertos')"><div class="tipo-dot"></div>Trocas e Consertos</div>
+          <div class="tipo-opt" onclick="selTipo(this,'Etiquetagem')"><div class="tipo-dot"></div>Etiquetagem</div>
+          <div class="tipo-opt" onclick="selTipo(this,'Prensa Térmica')"><div class="tipo-dot"></div>Prensa Térmica</div>
+        </div>
+        <input type="hidden" id="tipo">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Lote</div>
+    <div class="card-body">
+      <div class="row2">
+        <div class="field">
+          <label>O.S.</label>
+          <input type="text" id="os" placeholder="Ex: 1856A" oninput="filled(this)">
+        </div>
+        <div class="field">
+          <label>Facção</label>
+          <select id="faccao" onchange="chkFaccao(this)">
+            <option value="">Carregando...</option>
+          </select>
+          <input type="text" id="faccao_custom" placeholder="Digite o nome da facção" style="display:none;margin-top:6px;" oninput="filled(this)">
+        </div>
+      </div>
+      <div class="field">
+        <label>Modelo</label>
+        <select id="modelo" onchange="filled(this)">
+            <option value="">Carregando...</option>
+          </select>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Cor</label>
+          <select id="cor" onchange="filled(this)">
+            <option value="">Carregando...</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tamanho</label>
+          <div class="tam-opts">
+            <div class="tam-chip" onclick="selTam(this)">PP</div>
+            <div class="tam-chip" onclick="selTam(this)">P</div>
+            <div class="tam-chip" onclick="selTam(this)">M</div>
+            <div class="tam-chip" onclick="selTam(this)">G</div>
+            <div class="tam-chip" onclick="selTam(this)">GG</div>
+            <div class="tam-chip" onclick="selTam(this)">32</div>
+            <div class="tam-chip" onclick="selTam(this)">34</div>
+            <div class="tam-chip" onclick="selTam(this)">36</div>
+            <div class="tam-chip" onclick="selTam(this)">38</div>
+            <div class="tam-chip" onclick="selTam(this)">40</div>
+            <div class="tam-chip" onclick="selTam(this)">42</div>
+          </div>
+          <input type="hidden" id="tamanho">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Quantidades</div>
+    <div class="card-body">
+      <div class="field">
+        <label>Total revisado / produzido</label>
+        <input type="number" id="total" placeholder="0" min="0" inputmode="numeric" oninput="filled(this);calcSoma()">
+      </div>
+      <div class="qty-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;">
+        <div class="qty-box ok"><label>OK</label><input type="number" id="ok" placeholder="0" min="0" inputmode="numeric" oninput="calcSoma()"></div>
+        <div class="qty-box bz"><label>Bazar</label><input type="number" id="bazar" placeholder="0" min="0" inputmode="numeric" oninput="calcSoma()"></div>
+        <div class="qty-box co"><label>Conserto</label><input type="number" id="conserto" placeholder="0" min="0" inputmode="numeric" oninput="calcSoma()"></div>
+        <div class="qty-box sj"><label>Sujo</label><input type="number" id="sujo" placeholder="0" min="0" inputmode="numeric" oninput="calcSoma()"></div>
+      </div>
+      <div class="soma neutral" id="soma">Preencha total e os status</div>
+      <div class="field">
+        <label>Observações (opcional)</label>
+        <textarea id="obs" placeholder="Descreva defeitos ou observações..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-reg" id="btnReg" onclick="enviar()">Registrar lançamento</button>
+  <button class="btn-parcial" id="btnParcial" onclick="registrarParcial()">↩ Registro parcial — próximo tamanho</button>
+  <div class="hint">Após registrar, a tela limpa para o próximo lançamento</div>
+  <button class="btn-limpar" id="btnLimpar" onclick="limparTudo()">✕ Limpar</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ⚠️ COLE SEU LINK DO APPS SCRIPT AQUI
+  var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3ApxHLtMoHFdm28uS0InVQ4pX8v67LoDYuS5u6brmqv1EaUDPLjjopeVKp8t_wB0/exec";
+
+  // Principais cores (aparecem primeiro, antes das demais)
+  var CORES_PRINCIPAIS = ["PRETO","OFF WHITE","MARROM","VERMELHO","BLACK JEANS","CINZA"];
+
+  // Carrega listas do Sheets ao abrir o app
+  function carregarListas() {
+    fetch(SCRIPT_URL)
+      .then(function(r){ return r.json(); })
+      .then(function(data) {
+        popularSelect("modelo", data.modelos, false);
+        popularCores(data.cores);
+        popularFaccoes(data.faccoes);
+        popularColaboradoras(data.colaboradoras || []);
+      })
+      .catch(function() {
+        // Se falhar, mantém "Selecione..." e avisa
+        ["modelo","cor","faccao"].forEach(function(id){
+          var el = document.getElementById(id);
+          el.innerHTML = '<option value="">Erro ao carregar — reabra o app</option>';
+        });
+      });
+  }
+
+  function popularSelect(id, lista, comOutra) {
+    var el = document.getElementById(id);
+    el.innerHTML = '<option value="">Selecione...</option>';
+    lista.forEach(function(item) {
+      var opt = document.createElement("option");
+      opt.value = item; opt.textContent = item;
+      el.appendChild(opt);
+    });
+    if (comOutra) {
+      var opt = document.createElement("option");
+      opt.value = "__outra__"; opt.textContent = "+ Outra (digitar)";
+      el.appendChild(opt);
+    }
+  }
+
+  function popularCores(cores) {
+    var el = document.getElementById("cor");
+    el.innerHTML = '<option value="">Selecione...</option>';
+    // Principais primeiro
+    var principais = cores.filter(function(c){ return CORES_PRINCIPAIS.indexOf(c) >= 0; });
+    var outras     = cores.filter(function(c){ return CORES_PRINCIPAIS.indexOf(c) < 0; });
+    // Ordenar principais conforme a ordem definida
+    principais.sort(function(a,b){ return CORES_PRINCIPAIS.indexOf(a) - CORES_PRINCIPAIS.indexOf(b); });
+
+    if (principais.length) {
+      var grpP = document.createElement("optgroup");
+      grpP.label = "— Principais —";
+      principais.forEach(function(c){ var o=document.createElement("option"); o.value=c; o.textContent=c; grpP.appendChild(o); });
+      el.appendChild(grpP);
+    }
+    if (outras.length) {
+      var grpO = document.createElement("optgroup");
+      grpO.label = "— Outras —";
+      outras.sort().forEach(function(c){ var o=document.createElement("option"); o.value=c; o.textContent=c; grpO.appendChild(o); });
+      el.appendChild(grpO);
+    }
+  }
+
+  function popularFaccoes(faccoes) {
+    var el = document.getElementById("faccao");
+    el.innerHTML = '<option value="">Selecione...</option>';
+    faccoes.forEach(function(f) {
+      var opt = document.createElement("option");
+      opt.value = f; opt.textContent = f;
+      el.appendChild(opt);
+    });
+    var outra = document.createElement("option");
+    outra.value = "__outra__"; outra.textContent = "+ Outra (digitar)";
+    el.appendChild(outra);
+  }
+
+  function popularColaboradoras(lista) {
+    var el = document.getElementById("colaborador");
+    el.innerHTML = '<option value="">Selecione...</option>';
+    lista.forEach(function(nome) {
+      var opt = document.createElement("option");
+      opt.value = nome; opt.textContent = nome;
+      el.appendChild(opt);
+    });
+  }
+
+  // Inicia carregamento ao abrir
+  window.addEventListener("load", carregarListas);
+
+  function selTipo(el, val) {
+    document.querySelectorAll(".tipo-opt").forEach(function(o){ o.classList.remove("sel"); });
+    el.classList.add("sel");
+    document.getElementById("tipo").value = val;
+    var tiposComParcial = ["Revisão","Trocas e Consertos","Etiquetagem","Prensa Térmica"];
+    document.getElementById("btnParcial").style.display = tiposComParcial.indexOf(val) >= 0 ? "block" : "none";
+  }
+
+  function selTam(el) {
+    document.querySelectorAll(".tam-chip").forEach(function(c){ c.classList.remove("sel"); });
+    el.classList.add("sel");
+    document.getElementById("tamanho").value = el.textContent;
+  }
+
+  function filled(el) {
+    el.classList.toggle("filled", !!el.value);
+  }
+
+  // Mostra campo de texto livre quando seleciona "Outra"
+  function chkFaccao(el) {
+    var custom = document.getElementById("faccao_custom");
+    if (el.value === "__outra__") {
+      custom.style.display = "block";
+      custom.focus();
+    } else {
+      custom.style.display = "none";
+      custom.value = "";
+      filled(el);
+    }
+  }
+
+  function calcSoma() {
+    var total   = parseInt(document.getElementById("total").value) || 0;
+    var bazar   = parseInt(document.getElementById("bazar").value) || 0;
+    var cons    = parseInt(document.getElementById("conserto").value) || 0;
+    var sujo    = parseInt(document.getElementById("sujo").value) || 0;
+    var ok      = total - bazar - cons - sujo;
+    if (ok < 0) ok = 0;
+    document.getElementById("ok").value = total ? ok : "";
+    var el = document.getElementById("soma");
+    if (!total) {
+      el.className="soma neutral"; el.textContent="Preencha o total";
+    } else if ((bazar + cons + sujo) <= total) {
+      el.className="soma ok";
+      var partes=[];
+      if(ok>0) partes.push("OK: "+ok);
+      if(bazar>0) partes.push("Bazar: "+bazar);
+      if(cons>0) partes.push("Conserto: "+cons);
+      if(sujo>0) partes.push("Sujo: "+sujo);
+      el.textContent = partes.length>1 ? "✔ "+partes.join(" | ") : "✔ "+total+" peças — tudo OK";
+    } else {
+      el.className="soma warn"; el.textContent="⚠ Soma dos status excede o total";
+    }
+  }
+
+  function toast(msg, err) {
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = "toast show" + (err ? " err" : "");
+    setTimeout(function(){ t.className="toast"; }, 3500);
+  }
+
+  function limpar() {
+    ["os","total","ok","bazar","conserto","sujo","obs","faccao_custom"].forEach(function(id){
+      document.getElementById(id).value="";
+      document.getElementById(id).classList.remove("filled");
+    });
+    // Colaborador é select — reset para index 0
+    var elColab = document.getElementById("colaborador");
+    elColab.selectedIndex = 0;
+    elColab.classList.remove("filled");
+    document.getElementById("faccao_custom").style.display="none";
+    ["faccao","modelo","cor"].forEach(function(id){
+      var el=document.getElementById(id); el.selectedIndex=0; el.classList.remove("filled");
+    });
+    document.querySelectorAll(".tipo-opt").forEach(function(o){ o.classList.remove("sel"); });
+    document.querySelectorAll(".tam-chip").forEach(function(c){ c.classList.remove("sel"); });
+    document.getElementById("tipo").value="";
+    document.getElementById("tamanho").value="";
+    document.getElementById("btnParcial").style.display="none";
+    document.getElementById("soma").className="soma neutral";
+    document.getElementById("soma").textContent="Preencha total e os status";
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  function enviar() {
+    var colaborador = document.getElementById("colaborador").value.trim();
+    var tipo        = document.getElementById("tipo").value;
+    var os          = document.getElementById("os").value.trim();
+    var faccaoSel   = document.getElementById("faccao").value;
+    var faccao      = faccaoSel === "__outra__"
+                      ? document.getElementById("faccao_custom").value.trim()
+                      : faccaoSel;
+    var modelo      = document.getElementById("modelo").value;
+    var cor         = document.getElementById("cor").value;
+    var tamanho     = document.getElementById("tamanho").value;
+    var total       = parseInt(document.getElementById("total").value) || 0;
+
+    if (!colaborador||!tipo||!os||!faccao||!modelo||!cor||!tamanho||!total) {
+      toast("Preencha todos os campos obrigatórios", true);
+      return;
+    }
+
+    var bazar    = parseInt(document.getElementById("bazar").value) || 0;
+    var conserto = parseInt(document.getElementById("conserto").value) || 0;
+    var sujo     = parseInt(document.getElementById("sujo").value) || 0;
+    var ok       = total - bazar - conserto - sujo;
+    if (ok < 0) ok = 0;
+
+    var dados = {
+      colaborador:colaborador.toUpperCase(), tipo:tipo,
+      os:os.toUpperCase(), faccao:faccao.toUpperCase(),
+      modelo:modelo.toUpperCase(), cor:cor.toUpperCase(),
+      tamanho:tamanho, total:total,
+      ok:ok, bazar:bazar, conserto:conserto, sujo:sujo,
+      obs: document.getElementById("obs").value
+    };
+
+    toast("✔ Registrado!");
+    limpar();
+
+    fetch(SCRIPT_URL, {method:"POST", body:JSON.stringify(dados)})
+      .catch(function(){ toast("⚠ Falha ao gravar. Verifique conexão.", true); });
+  }
+
+  function registrarParcial() {
+    var colaborador = document.getElementById("colaborador").value.trim();
+    var tipo        = document.getElementById("tipo").value;
+    var os          = document.getElementById("os").value.trim();
+    var faccaoSel   = document.getElementById("faccao").value;
+    var faccao      = faccaoSel === "__outra__"
+                      ? document.getElementById("faccao_custom").value.trim()
+                      : faccaoSel;
+    var modelo      = document.getElementById("modelo").value;
+    var cor         = document.getElementById("cor").value;
+    var tamanho     = document.getElementById("tamanho").value;
+    var total       = parseInt(document.getElementById("total").value) || 0;
+
+    if (!colaborador||!tipo||!os||!faccao||!modelo||!cor||!tamanho||!total) {
+      toast("Preencha todos os campos obrigatórios", true);
+      return;
+    }
+
+    var bazar    = parseInt(document.getElementById("bazar").value) || 0;
+    var conserto = parseInt(document.getElementById("conserto").value) || 0;
+    var sujo     = parseInt(document.getElementById("sujo").value) || 0;
+    var ok       = total - bazar - conserto - sujo;
+    if (ok < 0) ok = 0;
+
+    var dados = {
+      colaborador:colaborador.toUpperCase(), tipo:tipo,
+      os:os.toUpperCase(), faccao:faccao.toUpperCase(),
+      modelo:modelo.toUpperCase(), cor:cor.toUpperCase(),
+      tamanho:tamanho, total:total,
+      ok:ok, bazar:bazar, conserto:conserto, sujo:sujo,
+      obs: document.getElementById("obs").value
+    };
+
+    // Grava e limpa SÓ tamanho + quantidades — mantém o resto
+    toast("✔ Parcial registrado! Selecione o próximo tamanho.");
+    fetch(SCRIPT_URL, {method:"POST", body:JSON.stringify(dados)})
+      .catch(function(){ toast("⚠ Falha ao gravar. Verifique conexão.", true); });
+
+    // Limpa apenas tamanho e quantidades
+    document.querySelectorAll(".tam-chip").forEach(function(c){ c.classList.remove("sel"); });
+    document.getElementById("tamanho").value = "";
+    ["total","ok","bazar","conserto","sujo"].forEach(function(id){
+      document.getElementById(id).value = "";
+    });
+    document.getElementById("soma").className = "soma neutral";
+    document.getElementById("soma").textContent = "Preencha total e os status";
+    // Mostra botão Limpar para caso seja o último tamanho
+    document.getElementById("btnLimpar").style.display = "block";
+    // Rola até o tamanho para ela já selecionar o próximo
+    document.getElementById("tamanho").scrollIntoView({behavior:"smooth", block:"center"});
+  }
+
+  function limparTudo() {
+    limpar();
+    document.getElementById("btnLimpar").style.display = "none";
+    toast("Tela limpa para nova O.S.");
+  }
+</script>
+</body>
+</html>
