@@ -64,6 +64,27 @@
 </head>
 <body>
 
+<!-- TELA DE LOGIN -->
+<div id="login-overlay" style="position:fixed;inset:0;background:#EFEDE8;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:16px;border:1px solid #E8E5DE;padding:28px 20px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(31,56,100,.12);">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:10px;color:rgba(31,56,100,0.5);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;">PANGEIA 96</div>
+      <div style="font-size:20px;font-weight:700;color:#1F3864;">Lançamento de Produção</div>
+      <div style="font-size:12px;color:#888780;margin-top:6px;">Faça login para continuar</div>
+    </div>
+    <div class="field" style="margin-bottom:10px;">
+      <label>Usuário</label>
+      <input type="text" id="login-usuario" placeholder="Seu usuário" autocomplete="username" style="font-size:15px;" onkeydown="if(event.key==='Enter')document.getElementById('login-senha').focus()">
+    </div>
+    <div class="field" style="margin-bottom:14px;">
+      <label>Senha</label>
+      <input type="password" id="login-senha" placeholder="Sua senha" autocomplete="current-password" style="font-size:15px;" onkeydown="if(event.key==='Enter')fazerLogin()">
+    </div>
+    <div id="login-erro" style="display:none;background:#FAECE7;color:#993C1D;border-radius:8px;padding:10px 12px;font-size:12px;font-weight:700;margin-bottom:12px;text-align:center;"></div>
+    <button id="btn-login" onclick="fazerLogin()" style="width:100%;padding:14px;background:#1F3864;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">Entrar</button>
+  </div>
+</div>
+
 <div class="top-bar">
   <div class="brand">Pangeia 96</div>
   <div class="title">Lançamento de Produção</div>
@@ -261,7 +282,43 @@
   }
 
   // Inicia carregamento ao abrir
-  window.addEventListener("load", carregarListas);
+  var usuarioLogado = '';
+
+function fazerLogin(){
+  var usuario = (document.getElementById('login-usuario').value||'').trim();
+  var senha   = (document.getElementById('login-senha').value||'').trim();
+  if(!usuario||!senha){ mostrarErroLogin('Preencha usuário e senha'); return; }
+  var btn = document.getElementById('btn-login');
+  btn.disabled = true; btn.textContent = 'Verificando...';
+  fetch(SCRIPT_URL + '?action=login&usuario=' + encodeURIComponent(usuario) + '&senha=' + encodeURIComponent(senha))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.ok){
+        usuarioLogado = d.nome;
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('topbar-nome').textContent = '👤 ' + d.nome;
+        carregarListas();
+      } else {
+        mostrarErroLogin(d.erro || 'Usuário ou senha incorretos');
+        btn.disabled = false; btn.textContent = 'Entrar';
+      }
+    })
+    .catch(function(){
+      mostrarErroLogin('Erro de conexão. Verifique a internet.');
+      btn.disabled = false; btn.textContent = 'Entrar';
+    });
+}
+
+function mostrarErroLogin(msg){
+  var el = document.getElementById('login-erro');
+  el.textContent = '⚠️ ' + msg;
+  el.style.display = 'block';
+}
+
+window.addEventListener("load", function(){
+  document.getElementById('login-overlay').style.display = 'flex';
+  document.getElementById('login-usuario').focus();
+});
 
   function selTipo(el, val) {
     document.querySelectorAll(".tipo-opt").forEach(function(o){ o.classList.remove("sel"); });
