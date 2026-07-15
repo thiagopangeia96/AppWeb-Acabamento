@@ -297,7 +297,6 @@ function fazerLogin(){
         usuarioLogado = d.nome;
         document.getElementById('login-overlay').style.display = 'none';
         document.getElementById('topbar-nome').textContent = '👤 ' + d.nome;
-        carregarListas();
       } else {
         mostrarErroLogin(d.erro || 'Usuário ou senha incorretos');
         btn.disabled = false; btn.textContent = 'Entrar';
@@ -318,6 +317,7 @@ function mostrarErroLogin(msg){
 window.addEventListener("load", function(){
   document.getElementById('login-overlay').style.display = 'flex';
   document.getElementById('login-usuario').focus();
+  carregarListas();
 });
 
   function selTipo(el, val) {
